@@ -442,12 +442,37 @@ func (c *Client) DeleteStatus(ctx context.Context, id ID) error {
 }
 
 // Search search content with query.
-func (c *Client) Search(ctx context.Context, q string, resolve bool) (*Results, error) {
+// q REQUIRED String. The search query.
+// type String. Specify whether to search for only accounts, hashtags, statuses
+// resolve Boolean. Attempt WebFinger lookup? Defaults to false.
+// following Boolean. Only include accounts that the user is following? Defaults to false.
+// account_id String. If provided, will only return statuses authored by this account.
+// exclude_unreviewed Boolean. Filter out unreviewed tags? Defaults to false. Use true when trying to find trending tags.
+func (c *Client) Search(
+	ctx context.Context,
+	q string,
+	queryType string,
+	resolve bool,
+	following bool,
+	accountId string,
+	excludeUnreviewed bool,
+	pg *Pagination,
+) (*Results, error) {
+
 	params := url.Values{}
 	params.Set("q", q)
+	if queryType != "" {
+		params.Set("type", queryType)
+	}
 	params.Set("resolve", fmt.Sprint(resolve))
+	params.Set("following", fmt.Sprint(following))
+	if accountId != "" {
+		params.Set("account_id", accountId)
+	}
+	params.Set("exclude_unreviewed", fmt.Sprint(excludeUnreviewed))
+
 	var results Results
-	err := c.doAPI(ctx, http.MethodGet, "/api/v2/search", params, &results, nil)
+	err := c.doAPI(ctx, http.MethodGet, "/api/v2/search", params, &results, pg)
 	if err != nil {
 		return nil, err
 	}

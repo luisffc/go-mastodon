@@ -34,9 +34,9 @@ func (c *Client) GetAccountLists(ctx context.Context, id ID) ([]*List, error) {
 }
 
 // GetListAccounts returns the accounts in a given list.
-func (c *Client) GetListAccounts(ctx context.Context, id ID) ([]*Account, error) {
+func (c *Client) GetListAccounts(ctx context.Context, id ID, pg *Pagination) ([]*Account, error) {
 	var accounts []*Account
-	err := c.doAPI(ctx, http.MethodGet, fmt.Sprintf("/api/v1/lists/%s/accounts", url.PathEscape(string(id))), url.Values{"limit": {"0"}}, &accounts, nil)
+	err := c.doAPI(ctx, http.MethodGet, fmt.Sprintf("/api/v1/lists/%s/accounts", url.PathEscape(string(id))), nil, &accounts, pg)
 	if err != nil {
 		return nil, err
 	}

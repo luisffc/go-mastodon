@@ -312,6 +312,7 @@ type Pagination struct {
 	SinceID ID
 	MinID   ID
 	Limit   int64
+	Offset  int64
 }
 
 func newPagination(rawlink string) (*Pagination, error) {
@@ -371,6 +372,9 @@ func (p *Pagination) setValues(params url.Values) url.Values {
 	}
 	if p.Limit > 0 {
 		params.Set("limit", fmt.Sprint(p.Limit))
+	}
+	if p.Offset > 0 {
+		params.Set("offset", fmt.Sprint(p.Offset))
 	}
 
 	return params
